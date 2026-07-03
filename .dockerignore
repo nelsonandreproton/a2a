@@ -1,0 +1,9 @@
+.venv/
+__pycache__/
+*.pyc
+.env
+server.log
+.pytest_cache/
+.git/
+test_main.py
+README.md
