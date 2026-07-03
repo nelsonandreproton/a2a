@@ -1,0 +1,12 @@
+services:
+  a2a:
+    environment:
+      A2A_PUBLIC_URL: https://a2a.${CADDY_HOST}
+    expose:
+      - "8000"
+    networks:
+      - homeserver_default
+
+networks:
+  homeserver_default:
+    external: true

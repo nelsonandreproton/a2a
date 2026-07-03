@@ -79,13 +79,36 @@ docker compose up -d --build
 
 ## Deploy to Hetzner
 
-Deployed via the `homeserver` orchestrator (`../homeserver/docker-compose.yml`,
-service name `a2a`), reverse-proxied by Caddy at
-`https://a2a.<server-ip-with-dashes>.sslip.io` (see `../CNCSearch/Caddyfile`).
+Runs standalone — its own repo, own `docker-compose.yml`, own `deploy.sh`.
+It is **not** part of the homeserver orchestrator's build/sync/deploy graph.
+
+For HTTPS, the container joins the existing `homeserver_default` Docker
+network (via `docker-compose.prod.yml`, external network) so the shared
+Caddy instance (already holding ports 80/443) can reverse-proxy to it by
+container name — see the `a2a.{$CADDY_HOST}` block in `../CNCSearch/Caddyfile`.
+A real TLS cert isn't possible any other way here: sslip.io has no DNS-01
+API, and this container can't bind 80/443 itself (the homeserver Caddy
+already does).
+
+Public URL: `https://a2a.<server-ip-with-dashes>.sslip.io`
+
+Requires `CADDY_HOST` in this project's own `.env` on the server, matching
+the value already set in `../homeserver/.env`.
 
 ```bash
 bash deploy.sh
 ```
+
+`deploy.sh` syncs this repo and runs
+`docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build`.
+Local dev (`docker compose up -d --build` with no explicit `-f` flags) instead
+picks up `docker-compose.override.yml`, which publishes port 8000 on
+`127.0.0.1` for local testing — no Caddy or `CADDY_HOST` needed.
+
+**One manual step after the first deploy:** the shared Caddyfile is a
+bind-mounted single file. A running Caddy container won't notice the new
+`a2a.{$CADDY_HOST}` entry until it's force-recreated:
+`ssh hetzner "cd /home/garminbot/homeserver && docker compose up -d --force-recreate caddy"`.
 
 ## OutSystems ODC integration
 
