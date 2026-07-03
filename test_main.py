@@ -21,6 +21,9 @@ def test_agent_card_is_served():
     body = response.json()
     assert body["name"] == "Greeter Agent"
     assert body["skills"][0]["id"] == "greet"
+    # ODC's A2A client validates against the v0.3 schema, which requires a
+    # top-level "url" field (v1.0's "supportedInterfaces" alone isn't enough).
+    assert body["url"]
 
 
 def test_send_message_v1_returns_greeting():
