@@ -1,5 +1,6 @@
 """Minimal A2A protocol server: greets whoever it's asked to greet."""
 
+import logging
 import os
 
 import uvicorn
@@ -7,6 +8,8 @@ from dotenv import load_dotenv
 from fastapi import FastAPI
 
 load_dotenv()
+
+logging.basicConfig(level=logging.INFO, format="%(asctime)s %(name)s %(levelname)s %(message)s")
 
 from a2a.compat.v0_3.types import AgentCapabilities as AgentCapabilitiesV0_3
 from a2a.compat.v0_3.types import AgentCard as AgentCardV0_3

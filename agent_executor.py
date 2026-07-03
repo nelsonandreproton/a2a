@@ -1,22 +1,34 @@
 """Minimal AgentExecutor: reads user text, replies "Olá <text>"."""
 
+import logging
 import uuid
 
 from a2a.server.agent_execution import AgentExecutor, RequestContext
 from a2a.server.events import EventQueue
 from a2a.types import Message, Part, Role
 
+logger = logging.getLogger("a2a.greeter")
+
 
 class GreeterAgentExecutor(AgentExecutor):
     async def execute(self, context: RequestContext, event_queue: EventQueue) -> None:
         name = context.get_user_input().strip() or "mundo"
+        reply_text = f"Olá {name}"
+
+        logger.info(
+            "greet request received: name=%r context_id=%s task_id=%s -> reply=%r",
+            name,
+            context.context_id,
+            context.task_id,
+            reply_text,
+        )
 
         reply = Message(
             message_id=str(uuid.uuid4()),
             context_id=context.context_id,
             task_id=context.task_id,
             role=Role.ROLE_AGENT,
-            parts=[Part(text=f"Olá {name}")],
+            parts=[Part(text=reply_text)],
         )
         await event_queue.enqueue_event(reply)
 
