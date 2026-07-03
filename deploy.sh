@@ -11,9 +11,9 @@ cd "$SCRIPT_DIR"
 
 echo "=== a2a Deploy ==="
 
-echo "[1/3] Syncing to origin/main..."
+echo "[1/3] Syncing to origin/master..."
 git fetch origin
-git reset --hard origin/main
+git reset --hard origin/master
 
 COMPOSE_ARGS="-f docker-compose.yml -f docker-compose.prod.yml"
 
